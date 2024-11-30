@@ -1,0 +1,26 @@
+/* Couleurs principales */
+body {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+header {
+    background-color: #1A78CB;
+}
+
+header img {
+    height: 50px;
+}
+
+h1 {
+    font-size: 1.8rem;
+}
+
+h3 {
+    font-size: 1.4rem;
+    text-align: center;
+}
+
+.progress-bar {
+    background-color: #1A78CB;
+}
