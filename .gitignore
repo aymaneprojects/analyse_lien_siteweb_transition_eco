@@ -1,0 +1,32 @@
+# Ignorer l'environnement virtuel
+venv/
+*.egg-info/
+
+# Ignorer les fichiers de configuration locaux
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Ignorer les fichiers de log
+*.log
+
+# Ignorer les fichiers temporaires
+*.swp
+*.swo
+
+# Ignorer les fichiers d'upload
+uploads/
+
+# Ignorer les fichiers secrets
+*.env
+
+# Ignorer les fichiers spécifiques aux IDE
+.idea/
+.vscode/
+
+# Ignorer les fichiers générés par Vercel
+/.vercel/
+
+# Ignorer les fichiers spécifiques au système
+.DS_Store
