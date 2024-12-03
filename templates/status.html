@@ -25,19 +25,19 @@
         } catch (error) {
             console.error("Erreur lors du parsing des titres :", error);
         }
-    
-        const totalSteps = titles.length + 3; // +3 pour inclure les étapes finales
+
+        const totalSteps = titles.length + 3;
         let currentStep = 0;
-    
+
         function updateStatus() {
             const progress = ((currentStep + 1) / totalSteps) * 100;
-    
+
             if (currentStep < titles.length) {
                 document.getElementById("status-text").innerText = `Scraping : ${titles[currentStep]}`;
                 document.getElementById("progress-bar").style.width = progress + "%";
                 document.getElementById("progress-bar").innerText = Math.round(progress) + "%";
                 currentStep++;
-                setTimeout(updateStatus, 500); // Ajustez le délai ici si nécessaire
+                setTimeout(updateStatus, 500);
             } else if (currentStep === titles.length) {
                 document.getElementById("status-text").innerText = "Scraping terminé. Données sauvegardées.";
                 document.getElementById("progress-bar").style.width = progress + "%";
@@ -65,7 +65,7 @@
                 }, 2000);
             }
         }
-    
+
         document.addEventListener("DOMContentLoaded", () => {
             updateStatus();
         });

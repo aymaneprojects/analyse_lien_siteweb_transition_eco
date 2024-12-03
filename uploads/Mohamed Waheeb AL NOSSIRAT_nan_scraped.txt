@@ -1,0 +1,635 @@
+Page URL: https://malnossi.github.io/
+
+H2: Mohamed AL NOSSIRAT
+
+H3: Software Engineer@Munity
+
+
+---
+
+Page URL: https://malnossi.github.io/blog/
+
+Django & Modern JS Frameworks Session Authentication
+
+Reading time
+
+8 minutes
+
+Published at
+
+Vue & Vuetify Composable Confirm Dialogs
+
+Reading time
+
+3 minutes
+
+Published at
+
+Django & VueJS 2 an alternative integration
+
+Reading time
+
+6 minutes
+
+Published at
+
+Django Rest Framework rich related serializer
+
+Reading time
+
+4 minutes
+
+Published at
+
+
+---
+
+Page URL: https://malnossi.github.io/blog/page/1
+
+Click hereto be redirected.
+
+
+---
+
+Page URL: https://malnossi.github.io/tags/django
+
+Posts about Django
+
+Django & Modern JS Frameworks Session Authentication
+
+Reading time
+
+8 minutes
+
+Published at
+
+Django & VueJS 2 an alternative integration
+
+Reading time
+
+6 minutes
+
+Published at
+
+Django Rest Framework rich related serializer
+
+Reading time
+
+4 minutes
+
+Published at
+
+
+---
+
+Page URL: https://malnossi.github.io/tags/web
+
+Posts about Web
+
+Django & Modern JS Frameworks Session Authentication
+
+Reading time
+
+8 minutes
+
+Published at
+
+Django & VueJS 2 an alternative integration
+
+Reading time
+
+6 minutes
+
+Published at
+
+
+---
+
+Page URL: https://malnossi.github.io/tags/javascript
+
+Posts about Javascript
+
+Django & Modern JS Frameworks Session Authentication
+
+Reading time
+
+8 minutes
+
+Published at
+
+Vue & Vuetify Composable Confirm Dialogs
+
+Reading time
+
+3 minutes
+
+Published at
+
+Django & VueJS 2 an alternative integration
+
+Reading time
+
+6 minutes
+
+Published at
+
+
+---
+
+Page URL: https://malnossi.github.io/tags/python
+
+Posts about Python
+
+Django & Modern JS Frameworks Session Authentication
+
+Reading time
+
+8 minutes
+
+Published at
+
+Django & VueJS 2 an alternative integration
+
+Reading time
+
+6 minutes
+
+Published at
+
+Django Rest Framework rich related serializer
+
+Reading time
+
+4 minutes
+
+Published at
+
+
+---
+
+Page URL: https://malnossi.github.io/blog/django-modern-js-frameworks-session-authentication/
+
+H1: Django & Modern JS Frameworks Session Authentication
+
+H2: Introduction
+
+When building a single-page application (SPA) with Django & Django Rest Framework (DRF) alongside frameworks like React, Vue, or Angular, a common question developers face is: "How should I handle authentication ?"
+
+Several options are available:
+
+JSON Web Tokens (JWT)
+
+Django REST Framework's TokenAuthentication
+
+This can be confusing, even for experienced developers.
+
+However, I'd like to suggest a simpler alternative: just use Django’s built-in authentication system.
+
+Disclaimer: I am not a security expert, and this article does not provide any security advice. For guidance tailored to your specific needs, please reach out to a qualified security professional.
+
+H2: JSON Web Tokens (JWT)
+
+JWT (JSON Web Token)is a widely-used method for API authentication. If you're building a modern web application with Vue.js or React on the frontend and Django Rest Framework (DRF) on the backend, it's likely you'll consider JWT as a top option for implementing authentication.
+
+However, JWT is just one approach, and it's neither the simplest nor the most reliable. It isn’t supported natively by Django Rest Framework, which means you'll need extra libraries and configuration to set it up in your project.
+
+Additionally, implementing JWT securely can be quite challenging due to its complex design. AsJames Bennet, a long-time Django project contributor, puts it:
+
+"JWT is over-complex, puts too much power in the attacker's hands, has too many configuration knobs, and makes poor cryptographic choices. This is why we see vulnerabilities in JWT libraries and JWT-using systems again and again and again."
+
+Here is some examples ofJWT vulnerabilitiesfound in the wild.
+
+So on every request, we send the JWT via an HTTP header:
+
+We may not understand every technical aspect of JWTs, but the general idea is simple: a server issues a token, we include it in each request, and it grants us access to protected resources like/api/something.
+
+However, storing this token for repeated use poses a challenge. While native mobile apps offer secure storage options, web browsers rely onlocalStorageorsessionStorageboth of which are insecure.
+
+These storage options are vulnerable to cross-site scripting (XSS) attacks. The only safe option in browsers is using cookies, although non-HTTP cookies (like those accessible via document.cookie) remain insecure since scripts can still read them. Storing JWTs in cookies might help, but it doesn't address deeper issues with JWTs.
+
+The most significant concern is that once a JWT is intercepted, it isvulnerable to brute-force attacks. For this reason, JWTs are best used as a short-term solution to acquire something more secure, such as a session ID or OAuth access token, which should be stored in cookies.
+
+Another major drawback of JWTs is that they cannot be easily invalidated. This creates challenges in handling situations like:
+
+Logging out
+
+Compromised accounts
+
+Password changes
+
+Permission updates
+
+User de-provisioning
+
+If you choose to use JWTs, ensure they are short-lived and promptly exchanged for a more secure method of authentication.
+
+H2: Django REST Framework's TokenAuthentication
+
+Django REST Frameworkincludes a built-inTokenAuthenticationmechanism that generates unique tokens for each user and issues them through the built-in viewrest_framework.authtoken.views.obtain_auth_token.
+
+When authentication is successful, this view returns a JSON response with the token, which can be sent in an HTTP header like this:
+
+While this method works, we face the same challenge in a browser environment: where do we securely store this token ?
+
+If only Django provided a secure token stored in cookies for use in every request ?
+
+The good news is that if you can control the domain of both your backend and your frontend, you can use a much simpler method: Django sessions.
+
+H2: Poject Setup
+
+Create a new Django project
+
+H3: Backend
+
+Folder structure
+
+server'srequirements.txt
+
+H3: Frontend
+
+For this example I will use Vuejs with Vuetify to get some styled components, you can do the same thing with React, Angular, Svelte etc...
+
+follow the instructions to scaffold a new vuetify project
+
+Folder structure
+
+H2: Login View
+
+H2: Nginx
+
+I will use Nginx to reverse-proxy the server and the frontend, so the domain of the setup is the same for both.
+
+H2: Docker Compose File
+
+H2: Build and run the docker compose
+
+gand then go tohttp://django-session-app.localhost
+
+H2: Django Rest Framework settings
+
+Django Rest Framework comes with built-in session based authentication. To use it you have to add this in your Django settings module:
+
+Remember that authentication deals with recognizing the users that are connecting to your API, while permissions deals with giving access to some resources to the users.
+
+In theDEFAULT_AUTHENTICATION_CLASSESlist you are configuring only the good old Django sessions to authenticate users. In theDEFAULT_PERMISSION_CLASSESlist you are requiring that only authenticated users will access your endpoints.
+
+Django sessions are based by default on a session cookie stored on the client. There's no need for a "Token", an "Authorization" header or something like that.
+If you can store that session cookie on the client and send it on every request to your API you will authenticate the user.
+
+H2: Django Rest Framework authentication endpoint
+
+Now it's time to write a very simple view to let the users authenticate with a username/password.
+
+We'll need a serializer that will take the username and password from the request and will perform the actual authentication using Django authenication framework.
+
+Create a serializers.py file in your app and add this code to it:
+
+Then we can use this serializer in a login view. Add this to your views.py file:
+
+Mount your view in the project urls.py:
+
+H2: The Session and Django settings
+
+When it comes to security, tried-and-true technologies are often the best choice because they’ve had plenty of time to expose and fix vulnerabilities. If we set a few more settings in Django, we'll enable additional security:
+
+For further readings about Django's session frameworksee here
+
+Now go to the login page in the front and enter the user name and the password and click on Login. If every thing went good you will see thesessionidand thecsrftokenin the browser'sDevtools->Application->Cookies:
+
+The user is correctly logged in and a session cookie named sessionid has been returned to our client. If we will persist that session cookie in each request, our user will be persistently authenticated.
+
+H2: Django Rest Framework Logout endpoint
+
+Next, we'll wire up a few views that let us logout :
+
+Update the urls.py file like this:
+
+And update the Login view in the front endlike this:
+
+Now clear the session cookies and login again, after that click on the logout button, we can see that we have an error in the console panel of the browser's Devtools.
+
+H2: Cross Site Request Forgery protection (CSRF)
+
+from Django documentation:
+
+The CSRF middleware and template tag provides easy-to-use protection against Cross Site Request Forgeries. This type of attack occurs when a malicious website contains a link, a form button or some JavaScript that is intended to perform some action on your website, using the credentials of a logged-in user who visits the malicious site in their browser. A related type of attack, ‘login CSRF’, where an attacking site tricks a user’s browser into logging into a site with someone else’s credentials, is also covered. The first defense against CSRF attacks is to ensure that GET requests (and other ‘safe’ methods, as defined by RFC 9110#section-9.2.1) are side effect free. Requests via ‘unsafe’ methods, such as POST, PUT, and DELETE, can then be protected by the steps outlined in How to use Django’s CSRF protection.
+
+for further informationsee here
+
+So we have to include theX-CSRFTokenvalue in the request header for all post requests, let's update the logout function,
+
+You can see, when you click on the logout button, every thing goes as you want.
+
+H2: Get data with authenticated user
+
+Now we will add a view to our backend, only authenticated users will se a message say Hello, add to views.py file the following lines:
+
+In the urls.py file:
+
+And finally the login view
+
+H2: Result
+
+H2: Final words
+
+In this article, you learned how to set up authentication for a Django Rest Framework (DRF) application using Django's built-in session framework. This method works well if you have control over both the frontend and backend, and they are served under the same primary domain. In such cases, browser cookies can effectively maintain the user session across multiple requests. This assumption is often valid, and using this approach is generally simpler to implement compared to token-based authentication methods.
+
+Be sure to check out my example project onGithub, either clone or fork it to see how everything works in practice.
+
+Enjoy working with Django Rest Framework!
+
+
+---
+
+Page URL: https://malnossi.github.io/tags/vuejs
+
+Posts about Vuejs
+
+Vue & Vuetify Composable Confirm Dialogs
+
+Reading time
+
+3 minutes
+
+Published at
+
+Django & VueJS 2 an alternative integration
+
+Reading time
+
+6 minutes
+
+Published at
+
+
+---
+
+Page URL: https://malnossi.github.io/tags/vuetify
+
+Posts about Vuetify
+
+Vue & Vuetify Composable Confirm Dialogs
+
+Reading time
+
+3 minutes
+
+Published at
+
+
+---
+
+Page URL: https://malnossi.github.io/blog/vuetify-dialog/
+
+H1: Vue & Vuetify Composable Confirm Dialogs
+
+H2: Introduction
+
+Vuetify, a popular Material Design framework forVue, provides a wide range of UI components, including highly customizable dialogs. This article will guide you through building composable programmatic dialogs using Vue and Vuetify, allowing you to manage dialogs efficiently and flexibly.Creating programmatic dialogs in Vue using Vuetify allows developers to dynamically generate dialogs that enhance the user experience without cluttering the template with numerous dialog components.
+
+H2: Project Setup
+
+H2: Create the Dialog component
+
+Create a new dialog component insrc/components, here I will create a file namesDialog.vue
+
+The content of this file is :
+
+<v-dialog>: A Vuetify component that creates a modal dialog box.
+
+persistent: Prevents the user from closing the dialog by clicking outside of it.
+
+:title="title": Binds thetitleprop to the card title.
+
+<v-btn color="success">: A button with a green color labeled with thesubmitTextprop (default is "Submit").
+
+<v-btn color="error">: A button with a red color labeled with thecancelTextprop (default is "Cancel").
+
+And in the script section
+
+const open = defineModel({ default: false, type: Boolean }): This line creates a reactiveopenproperty with a default value offalseand specifies that it should be of typeBoolean. This property controls whether the dialog is visible.
+
+const emits = defineEmits(["submit", "cancel"]): Defines events that the component can emit, namely "submit" and "cancel". These events would typically be triggered when the corresponding buttons are clicked, but they are not explicitly emitted in the current code.
+
+const props = defineProps({ ... }): Defines the properties (props) that the component accepts:title: AStringprop with a default value of "Attention".message: AStringprop that defaults tonull.submitText: AStringprop with a default value of "Submit".cancelText: AStringprop with a default value of "Cancel".
+
+title: AStringprop with a default value of "Attention".
+
+message: AStringprop that defaults tonull.
+
+submitText: AStringprop with a default value of "Submit".
+
+cancelText: AStringprop with a default value of "Cancel".
+
+H2: Create Composable file
+
+In theuseDialog.jsfile copy and past this coce :
+
+H2: Usage
+
+H2: Result
+
+H2: Github source
+
+vue-vuetify-composable-dialog
+
+H2: Final Words
+
+Dialogs are essential for displaying critical information, confirmations, or forms without leaving the current page. However, managing dialogs can become cumbersome, especially in large-scale applications. Programmatic dialogs help mitigate this by creating dialogs on the fly using JavaScript, making them more manageable and reducing template bloat. Composable dialogs are built using the Composition API in Vue, enabling the encapsulation of dialog-related logic in a reusable and maintainable way.
+
+
+---
+
+Page URL: https://malnossi.github.io/blog/django-vue/
+
+H1: Django & VueJS 2 an alternative integration
+
+H2: Introduction
+
+Going back in time, I was faced with a problem. We had a Django application in production, with some 4,000 deployments around France. We wanted to migrate the views to RESTfull architecture. But such a migration is costly in terms of time and development. Above all, we wanted to migrate from a monolithic application to a microservice with a Vuejs front end. The requirements were highly restrictive: we had to put in place a session authentication system, interoperability with other systems/applications etc...
+
+So reinventing the wheel wasn't the best strategy to adopt. And we had to find a consensus, a common ground to facilitate the migration phase.
+
+I came up with a strategy for a Django-Vue integration that works in both development and production environments. As a bonus, it requires no extra dependencies.
+
+My approach involves three parts:
+
+Configure Vue to use the Django dev server for local development and the Django production server in production
+
+Configure Django to serve the production template of a Vue.js application as its homepage
+
+Configure Django and Vue to serve Vue's static files in production (images, CSS, JS)
+
+Let's get started !
+
+Here I'm going to talk about VueJs V2 integration, for VueJs V3 that will come in a future post
+
+H2: Project setup
+
+Let's start by setting up a Django project in your favorite location
+
+I use MacOs, please refer to your OS documentation for equivalent commands
+
+For now, we have the initial architecture of a Django project:
+
+After all these steps VueCLI will generate an application VueJs called webapp in the root directory of ower Django application
+
+H2: The Integration strategy
+
+First things first, We have to include The webapp directory as a Django's application so insettings.pywe're going to declare two new apps in theINSTALLED_APPSlist
+
+In the webapp directory we have to add 3 files:
+
+__init__.pyfile to mark the webapp directory as a Python package, making it possible to import modules and sub-packages from it.
+
+views.pyfile to write the views which will render the Vuejs template
+
+urls.pyfile to write the urlpatterns that will match the route patterns
+
+In the webapp folder we will change some of webpack settings to customize the build strategy to match Django's app conventions:
+
+If we refer to Django's Documentations we find the following in the StaticFiles section:
+
+Store your static files in a folder called static in your app. For example my_app/static/my_app/example.jpg.
+
+and
+
+Static file namespacing Now we might be able to get away with putting our static files directly in my_app/static/ (rather than creating another my_app subdirectory), but it would actually be a bad idea. Django will use the first static file it finds whose name matches, and if you had a static file with the same name in a different application, Django would be unable to distinguish between them. We need to be able to point Django at the right one, and the best way to ensure this is by namespacing them. That is, by putting those static files inside another directory named for the application itself.
+
+So, We need to build the Vuejs app in a folder called webapp located in the webapp's static folder as following Build to./static/webapp/
+
+In thevue.config.jsfile in thewebappdirectory :
+
+Then we can build the Vuejs appyarn buildornpm run buildand the directory tree give us this :
+
+By default the Django template loader will look within each app for a templates folder. But to avoid namespace issues you also need to repeat the app name in a folder below that before adding your template file.
+
+So, within the webapp app we create a templates directory, then a webapp directory, and finally our index.html file. The good news is that we can do this automatically during the vujs build phase.
+
+Again in thevue.config.jsfile :
+
+Django uses theSTATIC_URLwhen referring to static files located inSTATIC_ROOT.
+
+In Django's Documentation we find:
+
+If STATIC_URL is a relative path, then it will be prefixed by the server-provided value of SCRIPT_NAME (or / if not set). This makes it easier to serve a Django application in a subpath without adding an extra configuration to the settings.
+
+So for prefixing all the assets built with the vue-cli we have to add thepublicPathkey to match theSTATIC_URLsettings value un thesettings.pyfile.
+
+The default mode for vue-router is hash mode - it uses the URL hash to simulate a full URL so that the page won't be reloaded when the URL changes. In other words, Django will provide the navigation to render the Vuejs application, then Vuejs will take over the internal navigation with the hash prefix.
+
+For examplewww.mywebsite.com/##/will load the Vuejs application and to go towww.mywebsite.com/##/aboutthe about route is provided by the Vue Router and not by Django url patterns. So, inwebapp/router/index.jswe should change the configurations like this:
+
+After this we runyarn buildornpm run buildin the root folder of the webapp directory
+
+In thewebapp/views.py
+
+in thewebapp/urls.pyfile:
+
+and then in the mainurls.pyfile in the django_vue folder we set the root path to the webappurls:
+
+H2: Run the Devlopment server
+
+H2: Example app
+
+Start a new django app:
+
+Add the posts app to theINSTALLED_APPSlist in thesettings.pyfile, and mock some API to GET a list of whatever you want, so inposts/views.py:
+
+And in theposts/urls.py:
+
+and in theurls.pyfile in the project folder:
+
+Now Create aPostsView.vuefile inwebapp/src/views, the file content :
+
+Then add the posts route to the router file inwebapp/src/router/index.js:
+
+In theApp.vuefile add the router link to the posts component:
+
+Rebuild the vue app withyarn buildornpm run buildand run the django serverpython manage.py runserver
+
+H2: Results
+
+H2: Final words
+
+With a little configuration, Django and Vue can work well together during web application development and when it's ready to go live.
+A second benefit of this approach is that when you're developing new features or fixing bugs, you can run the production and development frontends in parallel, with Django's dev server running the production version and Vue's dev server doing the work - I'm working on it
+
+In this post, the Vue.js application and the Django API are treated as separate projects under the same roof, but this doesn't have to be the case.
+
+
+---
+
+Page URL: https://malnossi.github.io/tags/drf
+
+Posts about DRF
+
+Django Rest Framework rich related serializer
+
+Reading time
+
+4 minutes
+
+Published at
+
+
+---
+
+Page URL: https://malnossi.github.io/blog/drf-primarylink-serializer/
+
+H1: Django Rest Framework rich related serializer
+
+H2: Introduction
+
+Django REST Frameworkis an amazing librairy built on top of Python's most powerful web frameworkDjango. It is one of the best features to add to Django. But as always, nothing is perfect and to get the best out of this framework, you have to tinker with a few things around it.
+There's always one thing that annoys me when I use this framework, that's how serializers behave when it comes to retrieving and validating data.
+
+Let's imagine that we have theses Models:
+
+I assume that you know how to build views or viewsets and write the urlpatterns to use an api which expose Employees and Departments, if not! It's time to go and look at the DRF and Django documentations.
+
+Choices that we can get from this example:
+
+Not so practical to read, we want more information about the department. But so efficient when writing
+
+We can play with depth property of the serializer by example
+
+We get this
+
+But if we want to create a newemployee_namewe should send all the department object again, here in this example we don't have so much informations but what if we have a model with multiple nested relations, it will be so annoying
+
+H2: Solutions
+
+We can here use the DepartmentSerializer to retrieve the nested relation informations. But this will be a read only field as described in DRF documentation:
+
+By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create create() and/or update() methods in order to explicitly specify how the child relationships should be saved "Django REST Framework documentation" you can seehere
+
+Again, here we have a very simple example, but with multiple nested serializers this will become very long and very hard to maintain. So very good solution to read data but not so easy to write these relations
+
+We can use two serializers to make it easier to read and write data. However, we need to change the behaviour of our views or viewsets. So, to read the data (with GET http verb) or with (list, retrieve viewset actions) we use the ReadSerializer and to write the data with (POSt, PUT http verbs) or with (create, update viewset actions) we use the WriteSerializer.
+
+And in the ViewSet or View we can override the get_serializer_class methode to explicitly specify which serializer to use depending on which action we make:
+
+This solution may work, but you're writing almost the same serializer twice, and you're overriding the method in the viewset, so there's more code to write. Not very funny.
+
+Finally, we come to the purpose of this article. Here I'm going to tell you about this little trick I found.
+
+Looking at the DRFsource-code, especially the ModelSerializer class, I noticed that it automatically generates aPrimaryKeyRelatedFieldfor the model's relationships. which itself makes the link via the Id.
+
+So, the idea here is to inherit from this Class in order to build our own PrimaryKeyRelatedField:
+
+Then we can use it like this:
+
+So when we POST a new employee to the endpoint:
+
+The response of the API will retrieve directly the department object 🎉
+
+H2: Final words
+
+I don't claim to be an expert on Django's REST Framework, but the solution I've found here has enabled me to make progress on my projects, and when I've presented it to my colleagues, they've been pleased. However, I'd be happy to talk to anyone who would like to improve or criticise this solution.
+
+Also, you can refer to thisgithub repoif you want to see the source-code of the solution I mentioned in this article.
+
+
+---
+

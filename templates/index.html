@@ -8,36 +8,70 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header class="bg-blue text-white p-3">
-        <div class="d-flex align-items-center">
-            <img src="{{ url_for('static', filename='ressources/logo.jpg') }}" alt="Logo" height="50">
-            <h1 class="ms-3">Analyse de site web</h1>
+    <header class="bg-primary text-white p-3">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <img src="{{ url_for('static', filename='ressources/logo.jpg') }}" alt="Logo" height="50">
+                <h1 class="ms-3">Analyse de site web</h1>
+            </div>
         </div>
     </header>
     <main class="container mt-5">
-        <form action="/process_text" method="POST">
-            <div class="mb-3">
-                <label for="site_url" class="form-label">URL du site web</label>
-                <input type="url" class="form-control" id="site_url" name="site_url" required>
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="text-primary">Analyse d'une URL unique</h3>
+                <form action="/process_text" method="POST" class="mt-4">
+                    <div class="mb-3">
+                        <label for="site_url" class="form-label">URL du site web</label>
+                        <input type="url" class="form-control" id="site_url" name="site_url" placeholder="https://example.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nom</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Votre nom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="surname" class="form-label">Prénom</label>
+                        <input type="text" class="form-control" id="surname" name="surname" placeholder="Votre prénom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="domain" class="form-label">Domaine</label>
+                        <input type="text" class="form-control" id="domain" name="domain" placeholder="Ex : Technologie" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="max_pages" class="form-label">Nombre maximum de pages à scraper</label>
+                        <input type="number" class="form-control" id="max_pages" name="max_pages" value="20" min="1">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Lancer l'analyse</button>
+                </form>
             </div>
-            <div class="mb-3">
-                <label for="name" class="form-label">Nom</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+            <div class="col-md-6">
+                <h3 class="text-primary">Analyse de plusieurs sites</h3>
+                <form action="{{ url_for('process_file') }}" method="post" enctype="multipart/form-data" class="mt-4">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Téléchargez votre fichier (CSV ou Excel)</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".csv,.xlsx" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="max_pages_global" class="form-label">Nombre maximum de pages à scraper (global)</label>
+                        <input type="number" class="form-control" id="max_pages_global" name="max_pages_global" value="20" min="1">
+                    </div>
+                    <div class="alert alert-info mt-3">
+                        <strong>Note :</strong> Le fichier doit contenir les colonnes suivantes, nommées précisément :
+                        <ul>
+                            <li><strong>NOM</strong> : Nom de la personne ou de l'entreprise</li>
+                            <li><strong>PRÉNOM</strong> : Prénom de la personne</li>
+                            <li><strong>SITE_WEB</strong> : URL du site à analyser</li>
+                            <li>Optionnel : <strong>DOMAINE</strong> pour préciser le domaine d'activité</li>
+                        </ul>
+                        Si des colonnes manquent ou sont mal nommées, elles seront automatiquement corrigées ou ajoutées avec des valeurs par défaut.
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Analyser les sites</button>
+                </form>
             </div>
-            <div class="mb-3">
-                <label for="surname" class="form-label">Prénom</label>
-                <input type="text" class="form-control" id="surname" name="surname" required>
-            </div>
-            <div class="mb-3">
-                <label for="domain" class="form-label">Domaine</label>
-                <input type="text" class="form-control" id="domain" name="domain" required>
-            </div>
-            <div class="mb-3">
-                <label for="max_pages" class="form-label">Nombre maximum de pages à scraper</label>
-                <input type="number" class="form-control" id="max_pages" name="max_pages" value="20" min="1">
-            </div>
-            <button type="submit" class="btn btn-primary">Lancer l'analyse</button>
-        </form>
+        </div>
     </main>
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <p>&copy; 2024 - Votre entreprise. Tous droits réservés.</p>
+    </footer>
 </body>
 </html>
