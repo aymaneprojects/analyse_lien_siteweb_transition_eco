@@ -152,6 +152,80 @@ def process_sites():
         print(f"[ERREUR] Exception : {e}")
         return render_template('status.html', message=f"Erreur : {e}", titles=[])
 
+
+@app.route('/process_text', methods=['POST'])
+def process_text():
+    """
+    Analyser une seule URL et effectuer le scraping et l'analyse avec le LLM.
+    """
+    site_url = request.form.get('site_url')
+    name = request.form.get('name')
+    surname = request.form.get('surname')
+    domain = request.form.get('domain')
+    max_pages = request.form.get('max_pages', default=20, type=int)
+
+    if not site_url or not name or not surname or not domain:
+        print("[ERREUR] Tous les champs sont requis.")
+        return render_template('status.html', message="Tous les champs sont requis.", titles=[])
+
+    # Valider et corriger l'URL si nécessaire
+    site_url = validate_and_fix_url(site_url)
+    if site_url == "N/A":
+        print(f"[ERREUR] URL invalide : {site_url}")
+        return render_template('status.html', message="URL invalide.", titles=[])
+
+    try:
+        # Scraping
+        print(f"[INFO] Début du scraping pour : {site_url} avec une limite de {max_pages} pages.")
+        scraped_data, _ = crawl_website(site_url, max_pages=max_pages)
+        if not scraped_data:
+            raise ValueError("Aucune donnée récupérée.")
+
+        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{name}_{surname}_scraped.txt")
+        with open(temp_path, "w", encoding="utf-8") as f:
+            for url, content in scraped_data.items():
+                f.write(f"Page URL: {url}\n\n")
+                f.write("\n".join(content))
+                f.write("\n\n---\n\n")
+
+        print(f"[INFO] Données scrappées pour : {site_url}")
+
+        # Analyse avec le LLM
+        print(f"[INFO] Début de l'analyse avec le LLM pour : {site_url}")
+        result = analyze_with_llm(temp_path, domain)
+        print(f"[INFO] Résultats : {result}")
+
+        # Préparer les résultats
+        result_row = {
+            "Name": name,
+            "Surname": surname,
+            "Domain": domain,
+            "Site URL": site_url,
+            "Ecological Transition (Score/30)": result["transition_ecologique"]["score"],
+            "Ecological Transition Justification": result["transition_ecologique"]["justification"],
+            "CSR Strategy (Score/30)": result["strategie_rse"]["score"],
+            "CSR Strategy Justification": result["strategie_rse"]["justification"],
+            "CSRD Mention (Score/40)": result["mention_csrd"]["score"],
+            "CSRD Mention Justification": result["mention_csrd"]["justification"],
+            "Global Score (/100)": result["score_global"]
+        }
+
+        # Sauvegarder les résultats dans un fichier CSV
+        results_df = pd.DataFrame([result_row])
+        results_path = os.path.join(app.config['RESULTS_FOLDER'], f"{name}_{surname}_results.csv")
+        results_df.to_csv(results_path, index=False)
+
+        session['results_path'] = results_path
+        print(f"[LOG] Résultats sauvegardés dans : {results_path}")
+
+        return redirect(url_for('results'))
+
+    except Exception as e:
+        print(f"[ERREUR] Erreur lors du traitement du site {site_url} : {e}")
+        return render_template('status.html', message=f"Erreur lors du traitement du site : {e}", titles=[])
+    
+
+    
 @app.route('/results', methods=['GET'])
 def results():
     results_path = session.get('results_path')
